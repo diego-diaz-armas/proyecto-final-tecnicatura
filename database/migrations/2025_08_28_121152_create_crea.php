@@ -15,8 +15,8 @@ return new class extends Migration
             $table->unsignedBigInteger('id_evento');
             $table->string('email');
             $table->primary(['email', 'id_evento']);
-            $table->foreign('id_evento')->references('id_evento')->on('evento');
-            $table->foreign('email')->references('email')->on('organizador');
+            $table->foreign('id_evento')->references('id_evento')->on('eventos');
+            $table->foreign('email')->references('email')->on('organizadores');
             $table->timestamps();
         });
     }

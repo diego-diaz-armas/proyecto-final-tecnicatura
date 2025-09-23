@@ -1,5 +1,6 @@
 <?php
 
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,9 +15,9 @@ return new class extends Migration
         Schema::create('comentarios', function (Blueprint $table) {
             $table->unsignedBigInteger('id_evento');
             $table->string('email');
-            $table->string('comentario', 100)->notNull();
-            $table->primary(['id_evento', 'email', 'comentario']);
-            $table->foreign('id_evento')->references('id_evento')->on('evento');
+            $table->string('comentario', 100);
+            $table->primary(['id_evento', 'email']);
+            $table->foreign('id_evento')->references('id_evento')->on('eventos');
             $table->foreign('email')->references('email')->on('usuarios');
             $table->timestamps();
         });

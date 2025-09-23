@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('puntaje');
             $table->boolean('visitado')->default(false);
             $table->primary(['id_evento', 'email']);
-            $table->foreign('id_evento')->references('id_evento')->on('evento');
+            $table->foreign('id_evento')->references('id_evento')->on('eventos');
             $table->foreign('email')->references('email')->on('usuarios');
             $table->timestamps();
         });
