@@ -6,31 +6,47 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Models\Usuarios;
+use App\Models\Organizador;
 
 class AuthController extends Controller
 {
-    // 🔹 Login → redirige al dashboard
     public function validacion(Request $request)
     {
-        $validated = $request->validate([
+        // Validación
+        $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ], [
+            'email.required' => 'El correo es obligatorio',
             'email.email' => 'Ingrese un correo válido',
             'password.required' => 'Ingrese su contraseña',
         ]);
 
+        // Buscar usuario
         $usuario = Usuarios::where('email', $request->email)->first();
 
-        if ($usuario && Hash::check($request->password, $usuario->password)) {
-            Auth::login($usuario);
-            return redirect()->route('dashboard')->with('success', 'Bienvenido ' . $usuario->name);
-        } else {
+        // Verificar si usuario existe y contraseña es correcta
+        if (!$usuario || !Hash::check($request->password, $usuario->password)) {
             return back()->withErrors(['login' => 'Credenciales incorrectas'])->withInput();
         }
+
+        // Loguear usuario
+        Auth::login($usuario);
+
+        // Regenerar sesión
+        $request->session()->regenerate();
+
+        // ⚡ Cargar organizador y eventos con relaciones para dashboard
+        $usuario->load([
+            'organizador.eventos' => function($query) {
+                $query->with(['categorias', 'fechasHoras', 'imagen']);
+            }
+        ]);
+
+        // Redirigir al dashboard
+        return redirect()->route('dashboard')->with('success', 'Bienvenido ' . $usuario->nombre);
     }
 
-    // 🔹 Registro → redirige al home (no al dashboard)
     public function registro(Request $request)
     {
         $validated = $request->validate([
@@ -48,25 +64,28 @@ class AuthController extends Controller
         ]);
 
         $usuario = Usuarios::create([
-            'name' => $request->name,
+            'nombre' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        // Login automático opcional: si querés que se loguee después de registrarse
         Auth::login($usuario);
 
-        // Redirige a home en vez de dashboard
-        return redirect()->route('home')->with('success', 'Cuenta creada correctamente. Bienvenido ' . $usuario->name);
+        // ⚡ Cargar organizador y eventos (aunque recién registrado probablemente no tenga)
+        $usuario->load([
+            'organizador.eventos' => function($query) {
+                $query->with(['categorias', 'fechasHoras', 'imagen']);
+            }
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Cuenta creada correctamente. Bienvenido ' . $usuario->nombre);
     }
 
-    // 🔹 Logout
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        return redirect()->route('login.form')->with('success', 'Has cerrado sesión.');
+        return redirect()->route('home')->with('success', 'Has cerrado sesión.');
     }
 }

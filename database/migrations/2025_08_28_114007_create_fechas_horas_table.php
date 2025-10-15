@@ -9,14 +9,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('fechas_horas', function (Blueprint $table) {
-            $table->unsignedBigInteger('id_evento');
-            $table->dateTimeTz('fechaHora');  // obligatorio por defecto
-            $table->primary(['id_evento', 'fechaHora']); // PK compuesta
-            $table->foreign('id_evento')
-                  ->references('id_evento')
-                  ->on('eventos')
-                  ->onDelete('cascade');  // opcional
+            $table->id();
+            $table->unsignedBigInteger('evento_id');
+            $table->dateTime('fecha_hora');
             $table->timestamps();
+
+            $table->foreign('evento_id')
+                    ->references('id')
+                    ->on('eventos')
+                    ->onDelete('cascade');
+
+            $table->unique(['evento_id', 'fecha_hora']); // Unique en lugar de primary
         });
     }
 

@@ -9,14 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('participantes', function (Blueprint $table) {
-            $table->string('email');           // columna email
+            $table->id();
+            $table->unsignedBigInteger('usuario_id'); // Relación con usuarios
             $table->timestamps();
 
-            $table->primary('email');          // declaramos PK
-            $table->foreign('email')           // declaramos FK
-                    ->references('email')
+            $table->foreign('usuario_id')
+                    ->references('id')
                     ->on('usuarios')
-                    ->onDelete('cascade');      // opcional: borrar participante si se borra usuario
+                    ->onDelete('cascade');
         });
     }
 

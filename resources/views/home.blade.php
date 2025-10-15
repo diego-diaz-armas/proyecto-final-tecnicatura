@@ -65,5 +65,10 @@
         @endforeach
     </div>
 
+    {{-- Paginación --}}
+    <div class="d-flex justify-content-center mt-4">
+        {{ $eventos->links('pagination::bootstrap-5') }}
+    </div>
+
 </div>
 @endsection

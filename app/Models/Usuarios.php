@@ -4,29 +4,48 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Usuarios extends Authenticatable
 {
-    use Notifiable;
+    use HasFactory, Notifiable;
 
-    // Nombre de la tabla
     protected $table = 'usuarios';
 
-    // Campos que se pueden asignar masivamente
     protected $fillable = [
-        'name',
+        'nombre',
         'email',
-        'password',
+        'password'
     ];
 
-    // Campos ocultos para arrays o JSON
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    // Conversión automática de tipos
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    // Relaciones (mantengo las que tenías)
+    public function organizador()
+    {
+        return $this->hasOne(Organizador::class, 'usuario_id');
+    }
+
+    public function participante()
+    {
+        return $this->hasOne(Participante::class, 'usuario_id');
+    }
+
+    public function comentarios()
+    {
+        return $this->hasMany(Comentario::class, 'usuario_id');
+    }
+
+    public function interacciones()
+    {
+        return $this->hasMany(Interaccion::class, 'usuario_id');
+    }
+
+    public function preferencias()
+    {
+        return $this->hasMany(Preferencia::class, 'usuario_id');
+    }
 }

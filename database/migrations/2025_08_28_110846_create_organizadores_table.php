@@ -9,15 +9,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('organizadores', function (Blueprint $table) {
-            $table->string('email');               // solo definimos la columna
+            $table->id();
+            $table->unsignedBigInteger('usuario_id'); // Relación con usuarios
             $table->string('contacto', 200);
             $table->timestamps();
 
-            $table->primary('email');              // declaramos PK
-            $table->foreign('email')               // declaramos FK
-                    ->references('email')
+            $table->foreign('usuario_id')
+                    ->references('id')
                     ->on('usuarios')
-                  ->onDelete('cascade');          // opcional: borrar organizador si se borra usuario
+                    ->onDelete('cascade');
         });
     }
 

@@ -72,11 +72,39 @@
             <span>Planazo</span>
         </div>
 
-        {{-- Links Login / Registro a la derecha --}}
+        {{-- Links dinámicos a la derecha --}}
         <div>
             <ul class="navbar-nav flex-row">
-                <li class="nav-item me-2"><a class="nav-link" href="{{ url('/login') }}">Login</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url('/registro') }}">Registro</a></li>
+                @guest
+                    {{-- Usuario NO logueado --}}
+                    <li class="nav-item me-2">
+                        <a class="nav-link" href="{{ route('login') }}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('register.form') }}">Registro</a>
+                    </li>
+                @endguest
+
+                @auth
+                    {{-- Usuario logueado --}}
+                    <li class="nav-item me-2">
+                        @if(Route::is('home'))
+                            <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
+                        @elseif(Route::is('dashboard'))
+                            <a class="nav-link" href="{{ route('home') }}">Ir a Home</a>
+                        @else
+                            <a class="nav-link" href="{{ route('home') }}">Home</a>
+                        @endif
+                    </li>
+                    <li class="nav-item">
+                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-link nav-link" style="display:inline; cursor:pointer;">
+                                Cerrar sesión
+                            </button>
+                        </form>
+                    </li>
+                @endauth
             </ul>
         </div>
 

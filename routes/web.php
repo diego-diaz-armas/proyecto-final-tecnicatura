@@ -2,8 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EventoController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HomeController;
 
 // Página de inicio
+Route::get('/', [HomeController::class, 'index'])->name('home');
+/*
 Route::get('/', function () {
     $eventos = [
         [
@@ -28,16 +33,15 @@ Route::get('/', function () {
 
     return view('home', compact('eventos'));
 })->name('home');
-
+*/
 
 Route::get('/login', function () {
     return view('login');
-})->name('login.form')->middleware('guest');
+})->name('login')->middleware('guest');
 
 Route::post('/login', [AuthController::class, 'validacion'])
     ->name('login.process')
     ->middleware('guest');
-
 
 Route::get('/registro', function () {
     return view('registro');
@@ -47,11 +51,22 @@ Route::post('/registro', [AuthController::class, 'registro'])
     ->name('register.process')
     ->middleware('guest');
 
-
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout')
     ->middleware('auth');
 
+
+    /*
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard')->middleware('auth');
+*/
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::resource('eventos', EventoController::class);
+
+    // nueva ruta para hacerse organizador
+    Route::post('/organizador/hacerse', [EventoController::class, 'hacerseOrganizador'])
+        ->name('organizador.hacerse');
+});

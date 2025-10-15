@@ -9,9 +9,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('usuarios', function (Blueprint $table) {
+            $table->id(); // Clave primaria autoincremental estándar de Laravel
             $table->string('nombre', 100);
-            $table->string('email')->primary();
+            $table->string('email')->unique(); // Email único pero no clave primaria
             $table->string('password');
+            $table->rememberToken(); // Necesario para la autenticación de Laravel
             $table->timestamps();
         });
     }
